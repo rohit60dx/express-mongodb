@@ -2,38 +2,26 @@ import express from 'express';
 import { MongoClient } from 'mongodb';
 
 const app = express();
-app.use(express.urlencoded({ extended: true }));
-app.set('view engine', 'ejs');
 
+app.set('view engine', 'ejs');
 const dbName = "collage";
 const url = 'mongodb://localhost:27017';
 const client = new MongoClient(url);
 
 let db; // Hold the database reference
 
-// Connect once at startup
-async function connectToDatabase() {
+// Route
+app.get("/", async (req, resp) => {
   try {
-    await client.connect();
+     await client.connect();
     console.log('Connected successfully to MongoDB server');
     db = client.db(dbName);
-  } catch (err) {
-    console.error('Failed to connect to MongoDB', err);
-    process.exit(1);
-  }
-}
-
-connectToDatabase();
-
-// Route
-app.get("/", async (req, res) => {
-  try {
     const collection = db.collection('students');
     const result = await collection.find({}).toArray();
-    res.render("usersCard", { users: result });
+    resp.render("usersCard", { users: result });
   } catch (err) {
     console.error("Error fetching data:", err);
-    res.status(500).send("Error loading students");
+    resp.status(500).send("Error loading students");
   }
 });
 
