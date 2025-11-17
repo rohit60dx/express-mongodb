@@ -11,15 +11,14 @@ app.set("view engine", 'ejs')
 app.use(express.urlencoded({ extended: true }))
 app.use(express.json())
 
-
-
 client.connect().then((connection) => {
-    const db = connection.db(dbName);
+ const db = connection.db(dbName);
 
-    app.get("/api", async (req, resp) => {
+
+// API to get all students  
+ app.get("/api", async (req, resp) => {
         const collection = db.collection("students");
         const students = await collection.find().toArray();
-
         resp.status(200).json({
             status: resp.statusCode,
             message: "Students fetched successfully",
@@ -27,6 +26,7 @@ client.connect().then((connection) => {
         });
     });
 
+// Route to render all students
     app.get("/", async (req, resp) => {
         const collection = db.collection("students")
         const students = await collection.find().toArray();
@@ -34,10 +34,13 @@ client.connect().then((connection) => {
 
     })
 
+ // Routes to add a student   
     app.get("/add-student", async (req, resp) => {
         resp.render("addStudent");
     })
 
+
+// POST: Add student    
     app.post("/add-student", async (req, resp) => {
         const { name, age, email } = req.body;
 
@@ -61,6 +64,8 @@ client.connect().then((connection) => {
     })
 
 
+
+ // API: POST Add student   
     app.post("/add-studend-api", async (req, resp) => {
         const { name, age, email } = req.body;
         if (!name || name.trim() === "") {
@@ -82,7 +87,7 @@ client.connect().then((connection) => {
 
 
 
-
+// DELETE: Delete student
     app.delete("/delete-student/:id", async (req, resp) => {
         const id = req.params.id;
         console.log("Deleting student with ID:", id);
@@ -102,7 +107,7 @@ client.connect().then((connection) => {
 
 
 
-    // PUT: Update student
+// PUT: Update student
     app.put("/update-student/:id", async (req, resp) => {
 
         const id = req.params.id;
@@ -134,7 +139,7 @@ client.connect().then((connection) => {
     });
 
 
-
+// GET: Student details by ID
     app.get("/student-details/:id", async (req, resp) => {
         try {
             const id = req.params.id;
